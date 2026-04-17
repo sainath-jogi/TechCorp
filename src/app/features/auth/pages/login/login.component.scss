@@ -1,0 +1,301 @@
+/* Login component styles - Professional Corporate Theme */
+
+// Variables
+$primary-red: #da291c;
+$dark-color: #1a1a1a;
+$dark-gray: #2d2d2d;
+
+.login-page {
+  background: linear-gradient(135deg, $dark-color 0%, $dark-gray 50%, $primary-red 100%);
+  min-height: 100vh;
+  position: relative;
+  
+  // Subtle pattern overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(218, 41, 28, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+}
+
+// Brand Styling
+.brand-logo {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, $primary-red 0%, darken($primary-red, 10%) 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(218, 41, 28, 0.4);
+  
+  i {
+    font-size: 2rem;
+    color: white;
+  }
+}
+
+.brand-name {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.5px;
+}
+
+.brand-tagline {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+// Card Styling
+.card {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.card-body {
+  background-color: white;
+  border-radius: 16px;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $dark-color;
+}
+
+// Form Styling
+.form-label {
+  font-weight: 500;
+  color: $dark-gray;
+  font-size: 0.875rem;
+}
+
+.input-group {
+  border-radius: 8px;
+  
+  .input-group-text {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-right: none;
+    color: #666;
+    
+    i {
+      width: 16px;
+      text-align: center;
+    }
+  }
+  
+  .form-control {
+    border-left: none;
+    border: 1px solid #e0e0e0;
+    
+    &:focus {
+      box-shadow: none;
+      border-color: $primary-red;
+      
+      & + .btn,
+      & ~ .btn {
+        border-color: $primary-red;
+      }
+    }
+  }
+  
+  .btn {
+    border-color: #e0e0e0;
+    
+    &:hover {
+      background-color: #f8f9fa;
+    }
+  }
+}
+
+.input-group:focus-within {
+  .input-group-text {
+    border-color: $primary-red;
+    color: $primary-red;
+  }
+  
+  .form-control {
+    border-color: $primary-red;
+  }
+}
+
+// Primary Button
+.btn-primary {
+  background: linear-gradient(135deg, $primary-red 0%, darken($primary-red, 8%) 100%);
+  border: none;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, darken($primary-red, 5%) 0%, darken($primary-red, 12%) 100%);
+    box-shadow: 0 4px 16px rgba(218, 41, 28, 0.35);
+    transform: translateY(-1px);
+  }
+  
+  &:disabled {
+    background: linear-gradient(135deg, lighten($primary-red, 15%) 0%, lighten($primary-red, 10%) 100%);
+  }
+}
+
+// Social Buttons
+.btn-outline-secondary {
+  border-color: #e0e0e0;
+  color: $dark-gray;
+  font-weight: 500;
+  border-radius: 8px;
+  
+  &:hover {
+    background-color: #f8f9fa;
+    border-color: #d0d0d0;
+    color: $dark-color;
+  }
+}
+
+.form-check-input:checked {
+  background-color: $primary-red;
+  border-color: $primary-red;
+}
+
+// Quick Access Card
+.quick-access-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  overflow: hidden;
+  
+  .card-header {
+    background: linear-gradient(135deg, $dark-color 0%, $dark-gray 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    
+    i {
+      color: #ffc107;
+    }
+  }
+  
+  .card-body {
+    padding: 1rem;
+    background: white;
+  }
+}
+
+// Role Buttons
+.btn-role {
+  padding: 0.5rem 0.875rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  border: 1px solid;
+  transition: all 0.2s ease;
+  
+  &.admin {
+    background-color: rgba(218, 41, 28, 0.1);
+    border-color: $primary-red;
+    color: $primary-red;
+    
+    &:hover {
+      background-color: $primary-red;
+      color: white;
+    }
+  }
+  
+  &.customer {
+    background-color: rgba(0, 166, 80, 0.1);
+    border-color: #00a650;
+    color: #00a650;
+    
+    &:hover {
+      background-color: #00a650;
+      color: white;
+    }
+  }
+  
+  &.developer {
+    background-color: rgba(2, 136, 209, 0.1);
+    border-color: #0288d1;
+    color: #0288d1;
+    
+    &:hover {
+      background-color: #0288d1;
+      color: white;
+    }
+  }
+}
+
+// Login Footer
+.login-footer {
+  p {
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+// Invalid feedback
+.invalid-feedback {
+  font-size: 0.8125rem;
+  margin-top: 0.375rem;
+}
+
+// Divider
+.text-center.my-3 {
+  position: relative;
+  
+  span {
+    background: white;
+    padding: 0 0.75rem;
+    position: relative;
+    z-index: 1;
+    color: #999;
+    font-size: 0.8125rem;
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: #e0e0e0;
+  }
+}
+
+// Responsive
+@media (max-width: 576px) {
+  .brand-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    
+    i {
+      font-size: 2rem;
+    }
+  }
+  
+  .brand-name {
+    font-size: 1.75rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem !important;
+  }
+}

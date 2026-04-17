@@ -1,0 +1,17 @@
+<!-- Root App Container -->
+<div class="app-wrapper" [class.auth-layout]="!showHeaderFooter">
+  <!-- Header (hidden on auth pages) -->
+  @if (showHeaderFooter) {
+    <app-header></app-header>
+  }
+
+  <!-- Main Content Area -->
+  <main class="app-main" [class.with-header]="showHeaderFooter">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer (hidden on auth pages) -->
+  @if (showHeaderFooter) {
+    <app-footer></app-footer>
+  }
+</div>

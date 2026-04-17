@@ -1,0 +1,265 @@
+<!-- Cart Page Template -->
+<div class="cart-page">
+  <!-- Page Header -->
+  <div class="page-header mb-4">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h1 class="mb-1">
+          <i class="bi bi-cart3 me-2"></i>Shopping Cart
+        </h1>
+        <p class="text-muted mb-0">
+          @if (itemCount > 0) {
+            You have {{ itemCount }} item(s) in your cart
+          } @else {
+            Your cart is empty
+          }
+        </p>
+      </div>
+      <div class="col-md-6">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-md-end mb-0">
+            <li class="breadcrumb-item"><a routerLink="/dashboard">Home</a></li>
+            <li class="breadcrumb-item"><a routerLink="/products">Products</a></li>
+            <li class="breadcrumb-item active">Cart</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3 text-muted">Loading your cart...</p>
+    </div>
+  } @else if (cartItems.length === 0) {
+    <!-- Empty Cart -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center py-5">
+        <i class="bi bi-cart-x display-1 text-muted mb-3"></i>
+        <h3>Your cart is empty</h3>
+        <p class="text-muted mb-4">Looks like you haven't added any items yet.</p>
+        <a routerLink="/products" class="btn btn-primary btn-lg">
+          <i class="bi bi-bag me-2"></i>Start Shopping
+        </a>
+      </div>
+    </div>
+  } @else {
+    <div class="row g-4">
+      <!-- Cart Items -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Cart Items</h5>
+            <button 
+              class="btn btn-sm btn-outline-danger"
+              (click)="clearCart()"
+              [disabled]="isUpdating">
+              <i class="bi bi-trash me-1"></i>Clear Cart
+            </button>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 100px;">Product</th>
+                    <th>Details</th>
+                    <th style="width: 150px;" class="text-center">Quantity</th>
+                    <th style="width: 100px;" class="text-end">Price</th>
+                    <th style="width: 100px;" class="text-end">Total</th>
+                    <th style="width: 50px;"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of cartItems; track trackByItemId($index, item)) {
+                    <tr [class.opacity-50]="isUpdating">
+                      <td>
+                        <a [routerLink]="['/products', item.product.slug]">
+                          <img 
+                            [src]="item.product.thumbnail || item.product.images?.[0]" 
+                            [alt]="item.product.name"
+                            class="cart-item-image rounded">
+                        </a>
+                      </td>
+                      <td>
+                        <a 
+                          [routerLink]="['/products', item.product.slug]" 
+                          class="text-decoration-none text-dark fw-semibold">
+                          {{ item.product.name }}
+                        </a>
+                        <div class="text-muted small">
+                          {{ item.product.category }}
+                        </div>
+                        @if (item.product.stock && item.product.stock < 10) {
+                          <span class="badge bg-warning text-dark mt-1">
+                            Only {{ item.product.stock }} left
+                          </span>
+                        }
+                      </td>
+                      <td>
+                        <div class="input-group input-group-sm quantity-control">
+                          <button 
+                            class="btn btn-outline-secondary"
+                            type="button"
+                            (click)="decrementQuantity(item)"
+                            [disabled]="item.quantity <= 1 || isUpdating">
+                            <i class="bi bi-dash"></i>
+                          </button>
+                          <input 
+                            type="number" 
+                            class="form-control text-center" 
+                            [value]="item.quantity"
+                            (change)="updateQuantity(item, $any($event.target).valueAsNumber)"
+                            min="1"
+                            max="99"
+                            [disabled]="isUpdating">
+                          <button 
+                            class="btn btn-outline-secondary"
+                            type="button"
+                            (click)="incrementQuantity(item)"
+                            [disabled]="isUpdating">
+                            <i class="bi bi-plus"></i>
+                          </button>
+                        </div>
+                      </td>
+                      <td class="text-end">
+                        {{ item.product.price | currency:'GBP' }}
+                      </td>
+                      <td class="text-end fw-semibold">
+                        {{ getItemTotal(item) | currency:'GBP' }}
+                      </td>
+                      <td class="text-center">
+                        <button 
+                          class="btn btn-sm btn-outline-danger"
+                          (click)="removeItem(item)"
+                          [disabled]="isUpdating"
+                          title="Remove item">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer bg-white">
+            <a routerLink="/products" class="btn btn-outline-primary">
+              <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Summary -->
+      <div class="col-lg-4">
+        <!-- Promo Code Card -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white py-3">
+            <h6 class="mb-0">
+              <i class="bi bi-tag me-2"></i>Promo Code
+            </h6>
+          </div>
+          <div class="card-body">
+            @if (!promoApplied) {
+              <div class="input-group">
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="Enter code"
+                  [(ngModel)]="promoCode"
+                  [class.is-invalid]="promoError">
+                <button 
+                  class="btn btn-primary"
+                  (click)="applyPromoCode()"
+                  [disabled]="!promoCode.trim()">
+                  Apply
+                </button>
+              </div>
+              @if (promoError) {
+                <div class="text-danger small mt-2">{{ promoError }}</div>
+              }
+              <div class="text-muted small mt-2">
+                Try: SAVE10, SAVE20, UKSTORE25, WELCOME
+              </div>
+            } @else {
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="badge bg-success me-2">{{ promoCode }}</span>
+                  <span class="text-success">Applied!</span>
+                </div>
+                <button 
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="removePromoCode()">
+                  Remove
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Order Summary Card -->
+        <div class="card border-0 shadow-sm sticky-top" style="top: 1rem;">
+          <div class="card-header bg-white py-3">
+            <h5 class="mb-0">
+              <i class="bi bi-receipt me-2"></i>Order Summary
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Subtotal ({{ itemCount }} items)</span>
+              <span>{{ subtotal | currency:'GBP' }}</span>
+            </div>
+            @if (promoApplied && promoDiscount > 0) {
+              <div class="d-flex justify-content-between mb-2 text-success">
+                <span>Promo Discount</span>
+                <span>-{{ promoDiscount | currency:'GBP' }}</span>
+              </div>
+            }
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Shipping</span>
+              @if (shipping === 0) {
+                <span class="text-success">FREE</span>
+              } @else {
+                <span>{{ shipping | currency:'GBP' }}</span>
+              }
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-muted">VAT (20%)</span>
+              <span>{{ tax | currency:'GBP' }}</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-4">
+              <strong class="fs-5">Total</strong>
+              <strong class="fs-5 text-primary">{{ total | currency:'GBP' }}</strong>
+            </div>
+            <button 
+              class="btn btn-primary btn-lg w-100"
+              (click)="proceedToCheckout()"
+              [disabled]="isUpdating || cartItems.length === 0">
+              <i class="bi bi-credit-card me-2"></i>Proceed to Checkout
+            </button>
+            <div class="text-center mt-3">
+              <small class="text-muted">
+                <i class="bi bi-shield-check me-1"></i>
+                Secure checkout powered by Stripe
+              </small>
+            </div>
+          </div>
+          <div class="card-footer bg-light">
+            <div class="d-flex justify-content-center gap-3 text-muted">
+              <i class="bi bi-credit-card-2-front fs-4" title="Credit Card"></i>
+              <i class="bi bi-paypal fs-4" title="PayPal"></i>
+              <i class="bi bi-apple fs-4" title="Apple Pay"></i>
+              <i class="bi bi-google fs-4" title="Google Pay"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

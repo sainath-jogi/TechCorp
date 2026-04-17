@@ -1,0 +1,337 @@
+<!-- Dashboard Page Template -->
+<div class="dashboard-page">
+  <!-- Page Header -->
+  <div class="page-header mb-4">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h1 class="mb-1">
+          {{ getGreeting() }}, {{ currentUser?.firstName || 'User' }}! 👋
+        </h1>
+        <p class="text-muted mb-0">
+          Here's what's happening with your store today.
+        </p>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <p class="text-muted mb-0">
+          <i class="bi bi-clock me-1"></i>
+          {{ currentTime | date:'EEEE, MMMM d, y' }}
+        </p>
+        <p class="h5 mb-0">{{ currentTime | date:'HH:mm:ss' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3 text-muted">Loading dashboard data...</p>
+    </div>
+  } @else {
+    <!-- Stats Cards Row -->
+    <div class="row g-4 mb-4">
+      <!-- Revenue Card -->
+      <div class="col-sm-6 col-xl-3">
+        <div class="card stats-card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stats-icon bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-currency-pound"></i>
+              </div>
+              <div class="ms-3">
+                <h6 class="text-muted mb-1">Total Revenue</h6>
+                <h3 class="mb-0">{{ stats?.totalRevenue | currency:'GBP' }}</h3>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="badge bg-success-subtle text-success">
+                <i class="bi bi-arrow-up"></i> {{ stats?.revenueGrowth }}%
+              </span>
+              <small class="text-muted ms-2">vs last month</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Card -->
+      <div class="col-sm-6 col-xl-3">
+        <div class="card stats-card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stats-icon bg-success bg-opacity-10 text-success">
+                <i class="bi bi-bag-check"></i>
+              </div>
+              <div class="ms-3">
+                <h6 class="text-muted mb-1">Total Orders</h6>
+                <h3 class="mb-0">{{ stats?.totalOrders | number }}</h3>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="badge bg-success-subtle text-success">
+                <i class="bi bi-arrow-up"></i> {{ stats?.ordersGrowth }}%
+              </span>
+              <small class="text-muted ms-2">vs last month</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customers Card -->
+      <div class="col-sm-6 col-xl-3">
+        <div class="card stats-card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stats-icon bg-info bg-opacity-10 text-info">
+                <i class="bi bi-people"></i>
+              </div>
+              <div class="ms-3">
+                <h6 class="text-muted mb-1">Total Customers</h6>
+                <h3 class="mb-0">{{ stats?.totalCustomers | number }}</h3>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="badge bg-success-subtle text-success">
+                <i class="bi bi-arrow-up"></i> {{ stats?.customersGrowth }}%
+              </span>
+              <small class="text-muted ms-2">new this month</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conversion Rate Card -->
+      <div class="col-sm-6 col-xl-3">
+        <div class="card stats-card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stats-icon bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-graph-up-arrow"></i>
+              </div>
+              <div class="ms-3">
+                <h6 class="text-muted mb-1">Conversion Rate</h6>
+                <h3 class="mb-0">{{ stats?.conversionRate }}%</h3>
+              </div>
+            </div>
+            <div class="mt-3">
+              <div class="progress" style="height: 6px;">
+                <div 
+                  class="progress-bar bg-warning" 
+                  [style.width.%]="stats?.conversionRate ? (stats?.conversionRate ?? 0) * 10 : 0">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+      <!-- Sales Chart -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <i class="bi bi-bar-chart me-2 text-primary"></i>Sales Overview
+              </h5>
+              <span class="badge bg-primary">Last 7 Days</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div class="d-flex align-items-end justify-content-between h-100" style="height: 200px;">
+                @for (sale of stats?.recentSales; track sale.date) {
+                  <div class="chart-bar-wrapper text-center">
+                    <div 
+                      class="chart-bar bg-primary rounded-top"
+                      [style.height.%]="getChartBarHeight(sale.amount)"
+                      [title]="(sale.amount | currency:'GBP')">
+                    </div>
+                    <small class="text-muted mt-2 d-block">{{ formatShortDate(sale.date) }}</small>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Status -->
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-0 py-3">
+            <h5 class="mb-0">
+              <i class="bi bi-pie-chart me-2 text-success"></i>Orders by Status
+            </h5>
+          </div>
+          <div class="card-body">
+            @if (stats?.ordersByStatus) {
+              <div class="order-status-list">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span><i class="bi bi-circle-fill text-warning me-2"></i>Pending</span>
+                  <span class="badge bg-warning text-dark">{{ stats?.ordersByStatus?.pending }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span><i class="bi bi-circle-fill text-info me-2"></i>Processing</span>
+                  <span class="badge bg-info">{{ stats?.ordersByStatus?.processing }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span><i class="bi bi-circle-fill text-primary me-2"></i>Shipped</span>
+                  <span class="badge bg-primary">{{ stats?.ordersByStatus?.shipped }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span><i class="bi bi-circle-fill text-success me-2"></i>Delivered</span>
+                  <span class="badge bg-success">{{ stats?.ordersByStatus?.delivered }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span><i class="bi bi-circle-fill text-danger me-2"></i>Cancelled</span>
+                  <span class="badge bg-danger">{{ stats?.ordersByStatus?.cancelled }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Links & Recent Orders Row -->
+    <div class="row g-4 mb-4">
+      <!-- Quick Links -->
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-0 py-3">
+            <h5 class="mb-0">
+              <i class="bi bi-lightning me-2 text-warning"></i>Quick Actions
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-2">
+              @for (link of quickLinks; track link.route) {
+                <a 
+                  [routerLink]="link.route" 
+                  class="btn btn-outline-{{ link.color }} d-flex align-items-center justify-content-start">
+                  <i class="bi {{ link.icon }} me-2"></i>{{ link.label }}
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="col-md-8">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <i class="bi bi-clock-history me-2 text-info"></i>Recent Orders
+              </h5>
+              <a routerLink="/orders" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Order #</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (order of recentOrders; track order.id) {
+                    <tr>
+                      <td>
+                        <a [routerLink]="['/orders', order.id]" class="text-decoration-none">
+                          {{ order.orderNumber }}
+                        </a>
+                      </td>
+                      <td>{{ order.items.length }} item(s)</td>
+                      <td>
+                        <span class="badge {{ getStatusBadgeClass(order.status) }}">
+                          {{ order.status | titlecase }}
+                        </span>
+                      </td>
+                      <td>{{ order.total | currency:'GBP' }}</td>
+                      <td>{{ order.createdAt | date:'short' }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="5" class="text-center py-4 text-muted">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        No recent orders
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Products & Sales by Category -->
+    <div class="row g-4">
+      <!-- Top Products -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-0 py-3">
+            <h5 class="mb-0">
+              <i class="bi bi-star me-2 text-warning"></i>Top Selling Products
+            </h5>
+          </div>
+          <div class="card-body">
+            @for (product of stats?.topProducts; track product.name; let i = $index) {
+              <div class="d-flex align-items-center mb-3">
+                <span class="badge bg-{{ i < 3 ? 'primary' : 'secondary' }} me-3">{{ i + 1 }}</span>
+                <div class="flex-grow-1">
+                  <h6 class="mb-0">{{ product.name }}</h6>
+                  <small class="text-muted">{{ product.sales }} sales</small>
+                </div>
+                <span class="text-success fw-semibold">{{ product.revenue | currency:'GBP' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales by Category -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-0 py-3">
+            <h5 class="mb-0">
+              <i class="bi bi-tags me-2 text-info"></i>Sales by Category
+            </h5>
+          </div>
+          <div class="card-body">
+            @for (category of stats?.salesByCategory; track category.category) {
+              <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>{{ category.category }}</span>
+                  <span class="text-muted">{{ category.percentage }}%</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                  <div 
+                    class="progress-bar" 
+                    [style.width.%]="category.percentage"
+                    [class.bg-primary]="category.percentage >= 30"
+                    [class.bg-success]="category.percentage >= 20 && category.percentage < 30"
+                    [class.bg-info]="category.percentage >= 10 && category.percentage < 20"
+                    [class.bg-warning]="category.percentage < 10">
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

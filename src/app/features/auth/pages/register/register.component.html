@@ -1,0 +1,255 @@
+<!-- Register Page Template -->
+<div class="register-page">
+  <div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100 py-5">
+      <div class="col-md-8 col-lg-6 col-xl-5">
+        
+        <!-- Logo & Brand -->
+        <div class="text-center mb-4">
+          <div class="brand-logo mb-3">
+            <i class="bi bi-building"></i>
+          </div>
+          <h1 class="brand-name">TechCorp</h1>
+          <p class="brand-tagline">Enterprise Portal</p>
+        </div>
+
+        <!-- Register Card -->
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-4 p-md-5">
+            <h2 class="card-title text-center mb-4">Create Your Account</h2>
+            
+            <!-- Error Alert -->
+            @if (errorMessage) {
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{ errorMessage }}
+                <button type="button" class="btn-close" (click)="errorMessage = null"></button>
+              </div>
+            }
+            
+            <!-- Register Form -->
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+              <!-- Name Fields Row -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="firstName" class="form-label">First Name</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="bi bi-person"></i>
+                    </span>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      [class.is-invalid]="firstNameControl?.invalid && firstNameControl?.touched"
+                      id="firstName" 
+                      formControlName="firstName"
+                      placeholder="First name">
+                  </div>
+                  @if (firstNameControl?.invalid && firstNameControl?.touched) {
+                    <div class="invalid-feedback d-block">
+                      @if (firstNameControl?.errors?.['required']) {
+                        First name is required
+                      } @else if (firstNameControl?.errors?.['minlength']) {
+                        Minimum 2 characters
+                      }
+                    </div>
+                  }
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="lastName" class="form-label">Last Name</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    [class.is-invalid]="lastNameControl?.invalid && lastNameControl?.touched"
+                    id="lastName" 
+                    formControlName="lastName"
+                    placeholder="Last name">
+                  @if (lastNameControl?.invalid && lastNameControl?.touched) {
+                    <div class="invalid-feedback d-block">
+                      @if (lastNameControl?.errors?.['required']) {
+                        Last name is required
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Email Field -->
+              <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="bi bi-envelope"></i>
+                  </span>
+                  <input 
+                    type="email" 
+                    class="form-control" 
+                    [class.is-invalid]="emailControl?.invalid && emailControl?.touched"
+                    id="email" 
+                    formControlName="email"
+                    placeholder="Enter your email">
+                </div>
+                @if (emailControl?.invalid && emailControl?.touched) {
+                  <div class="invalid-feedback d-block">
+                    @if (emailControl?.errors?.['required']) {
+                      Email is required
+                    } @else if (emailControl?.errors?.['email']) {
+                      Please enter a valid email
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Password Field -->
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="bi bi-lock"></i>
+                  </span>
+                  <input 
+                    [type]="showPassword ? 'text' : 'password'" 
+                    class="form-control" 
+                    [class.is-invalid]="passwordControl?.invalid && passwordControl?.touched"
+                    id="password" 
+                    formControlName="password"
+                    placeholder="Create a password">
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-secondary"
+                    (click)="togglePasswordVisibility('password')">
+                    <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+                  </button>
+                </div>
+                <!-- Password Strength Indicator -->
+                @if (passwordControl?.value) {
+                  <div class="mt-2">
+                    <div class="progress" style="height: 5px;">
+                      <div 
+                        class="progress-bar" 
+                        [class]="getPasswordStrength().class"
+                        [style.width.%]="getPasswordStrength().percentage">
+                      </div>
+                    </div>
+                    <small [class]="'text-' + getPasswordStrength().class.replace('bg-', '')">
+                      Password strength: {{ getPasswordStrength().text }}
+                    </small>
+                  </div>
+                }
+                @if (passwordControl?.invalid && passwordControl?.touched) {
+                  <div class="invalid-feedback d-block">
+                    @if (passwordControl?.errors?.['required']) {
+                      Password is required
+                    } @else if (passwordControl?.errors?.['minlength']) {
+                      Minimum 8 characters required
+                    } @else if (passwordControl?.errors?.['passwordStrength']) {
+                      Must include uppercase, lowercase, and numbers
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Confirm Password Field -->
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="bi bi-lock-fill"></i>
+                  </span>
+                  <input 
+                    [type]="showConfirmPassword ? 'text' : 'password'" 
+                    class="form-control" 
+                    [class.is-invalid]="(confirmPasswordControl?.touched && registerForm.errors?.['passwordMismatch'])"
+                    id="confirmPassword" 
+                    formControlName="confirmPassword"
+                    placeholder="Confirm your password">
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-secondary"
+                    (click)="togglePasswordVisibility('confirm')">
+                    <i class="bi" [class.bi-eye]="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword"></i>
+                  </button>
+                </div>
+                @if (confirmPasswordControl?.touched && registerForm.errors?.['passwordMismatch']) {
+                  <div class="invalid-feedback d-block">
+                    Passwords do not match
+                  </div>
+                }
+              </div>
+
+              <!-- Role Selection -->
+              <div class="mb-3">
+                <label for="role" class="form-label">I want to</label>
+                <select class="form-select" id="role" formControlName="role">
+                  @for (role of roles; track role.value) {
+                    <option [value]="role.value">
+                      {{ role.label }}
+                    </option>
+                  }
+                </select>
+                <small class="text-muted">
+                  Training roles get access to simulated projects and tasks
+                </small>
+              </div>
+
+              <!-- Terms Checkbox -->
+              <div class="form-check mb-4">
+                <input 
+                  type="checkbox" 
+                  class="form-check-input" 
+                  [class.is-invalid]="agreeToTermsControl?.touched && agreeToTermsControl?.invalid"
+                  id="agreeToTerms" 
+                  formControlName="agreeToTerms">
+                <label class="form-check-label" for="agreeToTerms">
+                  I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> 
+                  and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                </label>
+                @if (agreeToTermsControl?.touched && agreeToTermsControl?.invalid) {
+                  <div class="invalid-feedback d-block">
+                    You must agree to the terms
+                  </div>
+                }
+              </div>
+
+              <!-- Submit Button -->
+              <button 
+                type="submit" 
+                class="btn btn-primary w-100 py-2 mb-3"
+                [disabled]="isLoading">
+                @if (isLoading) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Creating account...
+                } @else {
+                  <i class="bi bi-person-plus me-2"></i>Create Account
+                }
+              </button>
+
+              <!-- Divider -->
+              <div class="text-center my-3">
+                <span class="text-muted">or sign up with</span>
+              </div>
+
+              <!-- Social Sign Up -->
+              <div class="d-grid gap-2">
+                <button type="button" class="btn btn-outline-secondary" [disabled]="isLoading">
+                  <i class="bi bi-google me-2"></i>Continue with Google
+                </button>
+                <button type="button" class="btn btn-outline-secondary" [disabled]="isLoading">
+                  <i class="bi bi-github me-2"></i>Continue with GitHub
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Login Link -->
+        <div class="text-center mt-4">
+          <p class="text-white">
+            Already have an account? 
+            <a routerLink="/auth/login" class="text-white fw-semibold">Sign in</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

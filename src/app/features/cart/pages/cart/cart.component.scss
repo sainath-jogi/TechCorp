@@ -1,0 +1,157 @@
+/* Cart component styles */
+
+.cart-page {
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 60px);
+}
+
+.page-header {
+  padding: 1rem;
+  background: linear-gradient(135deg, #1a5276 0%, #2874a6 100%);
+  border-radius: 12px;
+  color: white;
+
+  h1 {
+    color: white;
+  }
+
+  .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  .breadcrumb {
+    .breadcrumb-item {
+      a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        
+        &:hover {
+          color: white;
+        }
+      }
+
+      &.active {
+        color: white;
+      }
+
+      &::before {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+}
+
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cart-item-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.quantity-control {
+  max-width: 130px;
+  margin: 0 auto;
+
+  input {
+    text-align: center;
+    
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &[type=number] {
+      -moz-appearance: textfield;
+    }
+  }
+
+  .btn {
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+.table {
+  th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+}
+
+// Sticky summary card
+.sticky-top {
+  z-index: 100;
+}
+
+// Payment icons
+.card-footer i {
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.2);
+    color: #1a5276;
+  }
+}
+
+// Mobile responsive
+@media (max-width: 992px) {
+  .cart-page {
+    padding: 1rem;
+  }
+
+  .cart-item-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .table {
+    font-size: 0.875rem;
+  }
+
+  .sticky-top {
+    position: relative !important;
+    top: 0 !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .table-responsive {
+    font-size: 0.8rem;
+  }
+
+  .cart-item-image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .quantity-control {
+    max-width: 100px;
+  }
+}
+
+// Animation
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.card {
+  animation: fadeIn 0.3s ease;
+}
